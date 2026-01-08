@@ -13,15 +13,14 @@ class PostController extends Controller
     {
         try
         {
-            // $user = Auth::id();
-            // if (!$user) {
-            //     return response()->json(['message' => 'Unauthorized'], 401);
-            // }
+            $user = Auth::id();
+            if (!$user) {
+                return response()->json(['message' => 'Unauthorized'], 401);
+            }
 
-            // $posts = Post::where('user_id', $user)->paginate(10);
+            $posts = Post::where('user_id', $user)->get();
             $posts = Post::paginate(10);
-            // return response()->json($posts, 200);
-            return view('posts.index',compact('posts'));
+            return response()->json($posts, 200);
         }
         catch(Exception $e)
         {

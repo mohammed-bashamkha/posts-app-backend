@@ -16,6 +16,7 @@ return new class extends Migration
             $table->text('content');
             $table->unsignedBigInteger('commentable_id');
             $table->string('commentable_type');
+            $table->softDeletes();
             $table->timestamps();
         });
     }
