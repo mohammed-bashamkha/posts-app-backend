@@ -10,35 +10,6 @@ use Illuminate\Support\Facades\Auth;
 
 class CommentController extends Controller
 {
-    // public function store(Request $request)
-    // {
-    //     try
-    //     {
-    //         $validated = $request->validate([
-    //         'content' => 'required|string|max:500',
-    //         'commentable_id' => 'required|integer',
-    //         'commentable_type' => 'required|string|in:App\Models\Post,App\Models\Image,App\Models\Video',
-    //     ]);
-
-    //     $commentable = $validated['commentable_type']::findOrFail($validated['commentable_id']);
-    //     $comment = $commentable->comments()->create(['content' => $validated['content']]);
-
-    //     return response()->json([
-    //         'message' => 'Comment Created Successfully',
-    //         'comment' => $comment
-    //     ]);
-    //     }
-    //     catch(\Exception $e)
-    //     {
-    //        return response()->json([
-    //         'Message' => 'Failed To Create Comment!',
-    //         'Error' => $e
-    //         ]); 
-    //     }
-    // }
-
-
-    // Anthor Way To Store Comment
     public function store(Request $request)
     {
         try
