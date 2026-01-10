@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StorePostRequest;
 use Illuminate\Http\Request;
 use App\UploadFileTrait;
 use App\Models\Post;
@@ -12,15 +13,19 @@ class ImageController extends Controller
 {
     use UploadFileTrait;
 
-    public function store(Request $request)
+    public function index()
+    {
+        $vediosPosts = Post::with('images')->where('type', 'images')->get();
+        return response()->json([
+            'message' => 'Image Posts Retrieved Successfully',
+            'posts' => $vediosPosts,
+        ], 200);
+    }
+    public function store(StorePostRequest $request)
     {
         try
         {
-            $request->validate([
-            'description' => 'nullable|string|max:500',
-            'image_url'   => 'required|array|min:1',
-            'image_url.*' => 'image|mimes:jpg,png,jpeg|max:2048',
-        ]);
+            $request->validated();
             $post = Post::create([
                 'user_id' => Auth::id(),
                 'type'    => 'image',

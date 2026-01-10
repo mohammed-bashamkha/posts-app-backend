@@ -21,6 +21,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('posts', PostController::class);
     Route::post('post/image',[ImageController::class,'store']);
     Route::post('post/video',[VideoController::class,'store']);
+    Route::get('post/images',[ImageController::class,'index']);
+    Route::get('post/videos',[VideoController::class,'index']);
     // trashed-restore-forceDelete routes
     Route::get('/trashed',[PostController::class,'showTrashed']);
     Route::post('/restore/{id}',[PostController::class,'restorePost']);

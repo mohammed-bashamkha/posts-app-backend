@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StorePostRequest;
 use App\Models\Post;
 use App\UploadFileTrait;
 use Exception;
@@ -11,15 +12,20 @@ use Illuminate\Support\Facades\Auth;
 class VideoController extends Controller
 {
     use UploadFileTrait;
-    public function store(Request $request)
+
+    public function index()
+    {
+        $vediosPosts = Post::with('videos')->where('type', 'video')->get();
+        return response()->json([
+            'message' => 'Video Posts Retrieved Successfully',
+            'posts' => $vediosPosts,
+        ], 200);
+    }
+    public function store(StorePostRequest $request)
     {
         try
         {
-            $request->validate([
-            'description' => 'nullable|string|max:500',
-            'video_url'   => 'required|array|min:1',
-            'video_url.*' => 'mimetypes:video/mp4,video/avi,video/mov|max:40480',
-        ]);
+            $request->validated();
             $post = Post::create([
                 'user_id' => Auth::id(),
                 'type'    => 'video',
