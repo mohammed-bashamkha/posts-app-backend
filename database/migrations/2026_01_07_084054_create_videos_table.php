@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('post_id')->constrained('posts')->onDelete('cascade');
-            $table->string('url');
+            $table->string('video_url');
             $table->string('description')->nullable();
             $table->timestamps();
         });

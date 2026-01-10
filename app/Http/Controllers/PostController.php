@@ -6,9 +6,11 @@ use Illuminate\Http\Request;
 use App\Models\Post;
 use Exception;
 use Illuminate\Support\Facades\Auth;
+use App\UploadFileTrait;
 
 class PostController extends Controller
 {
+    use UploadFileTrait;
     public function index()
     {
         try
@@ -18,8 +20,7 @@ class PostController extends Controller
                 return response()->json(['message' => 'Unauthorized'], 401);
             }
 
-            $posts = Post::where('user_id', $user)->get();
-            $posts = Post::paginate(10);
+            $posts = Post::where('user_id', $user)->with(['videos', 'images', 'comments'])->get();
             return response()->json($posts, 200);
         }
         catch(Exception $e)
@@ -35,14 +36,56 @@ class PostController extends Controller
     {
         try
         {
-            $data = $request->validate([
-            'user_id' => 'exists:user,id',
+            $request->validate([
             'title' => 'required|string',
-            'content' => 'required|string'
+            'content' => 'required|string',
+
+            'description' => 'nullable|string|max:500',
+
+            'video_url'   => 'nullable|array|min:1',
+            'video_url.*' => 'mimetypes:video/mp4,video/avi,video/mov|max:40480',
+
+            'image_url'   => 'nullable|array|min:1',
+            'image_url.*' => 'image|mimes:jpg,png,jpeg|max:2048',
         ]);
-            $data['user_id'] = Auth::id();
-            $post = Post::create($data);
-            return response()->json($post,201);
+            $post = Post::create([
+                'user_id' => Auth::id(),
+                'title' => $request->title,
+                'content' => $request->content,
+            ]);
+
+            if ($request->hasFile('image_url')) {
+            foreach ($request->file('image_url') as $image) {
+
+                $imagePath = $this->uploadFile($image, 'posts/images', 'public');
+
+                $images[] = $post->images()->create([
+                    'user_id'     => Auth::id(),
+                    'image_url'         => $imagePath,
+                    'description' => $request->description,
+                ]);
+            }
+        }
+
+
+            if ($request->hasFile('video_url')) {
+            foreach ($request->file('video_url') as $video) {
+
+                $videoPath = $this->uploadFile($video, 'posts/videos', 'public');
+
+                $videos[] = $post->videos()->create([
+                    'user_id'     => Auth::id(),
+                    'video_url'         => $videoPath,
+                    'description' => $request->description,
+                ]);
+            }
+        }
+
+            return response()->json([
+                'message' => 'Post created successfully',
+                'post' => $post->load(['images', 'videos']),
+                'description' => $request->description,
+            ],201);
         }
         catch(Exception $e)
         {
@@ -193,11 +236,6 @@ class PostController extends Controller
                 'error' => $e->getMessage()
             ]);
         }
-    }
-
-    public function displayPage()
-    {
-        return view('posts');
     }
 
 }

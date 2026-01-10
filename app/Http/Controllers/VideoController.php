@@ -17,22 +17,22 @@ class VideoController extends Controller
         {
             $request->validate([
             'description' => 'nullable|string|max:500',
-            'url'   => 'required|array|min:1',
-            'url.*' => 'mimetypes:video/mp4,video/avi,video/mov|max:40480',
+            'video_url'   => 'required|array|min:1',
+            'video_url.*' => 'mimetypes:video/mp4,video/avi,video/mov|max:40480',
         ]);
             $post = Post::create([
                 'user_id' => Auth::id(),
                 'type'    => 'video',
             ]);
 
-            foreach ($request->file('url') as $url) 
+            foreach ($request->file('video_url') as $video_url)
             {
-                $path = $this->uploadFile($url, 'posts/videos', 'public');
+                $path = $this->uploadFile($video_url, 'posts/videos', 'public');
 
                 $post->videos()->create([
                     'user_id' => Auth::id(),
                     'post_id' => $post->id,
-                    'url'     => $path,
+                    'video_url'     => $path,
                     'description' => $request->description,
                 ]);
             }

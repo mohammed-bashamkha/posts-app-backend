@@ -18,22 +18,22 @@ class ImageController extends Controller
         {
             $request->validate([
             'description' => 'nullable|string|max:500',
-            'url'   => 'required|array|min:1',
-            'url.*' => 'image|mimes:jpg,png,jpeg|max:2048',
+            'image_url'   => 'required|array|min:1',
+            'image_url.*' => 'image|mimes:jpg,png,jpeg|max:2048',
         ]);
             $post = Post::create([
                 'user_id' => Auth::id(),
                 'type'    => 'image',
             ]);
 
-            foreach ($request->file('url') as $url) 
+            foreach ($request->file('image_url') as $url)
             {
                 $path = $this->uploadFile($url, 'posts/images', 'public');
 
                 $post->images()->create([
                     'user_id' => Auth::id(),
                     'post_id' => $post->id,
-                    'url'     => $path,
+                    'image_url'     => $path,
                     'description' => $request->description,
                 ]);
             }
